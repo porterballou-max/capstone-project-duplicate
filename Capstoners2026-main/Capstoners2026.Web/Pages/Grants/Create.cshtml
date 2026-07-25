@@ -1,0 +1,15 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Grants.CreateModel
+@{
+    ViewData["Title"] = "Create Grant";
+}
+
+<h2>Create Grant</h2>
+
+<form method="post" enctype="multipart/form-data" class="mt-3">
+    <partial name="_GrantForm" model="Model.GrantViewModel" />
+
+    <button type="submit" asp-page-handler="Save" class="btn btn-success">Save</button>
+    <button type="submit" asp-page-handler="Submit" class="btn btn-primary ms-2">Submit</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

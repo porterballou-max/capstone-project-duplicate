@@ -1,0 +1,25 @@
+﻿@model Capstoners2026.Web.Models.SelectDepartmentModel
+
+<div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="ChangeDepartment" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change Model</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label asp-for="DepartmentId" class="form-label">Department</label>
+                    <select id="DepartmentsDropdown" asp-for="DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

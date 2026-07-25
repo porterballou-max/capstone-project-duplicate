@@ -1,0 +1,221 @@
+@page "{id:int}"
+@model Capstoners2026.Web.Pages.Review.DetailsModel
+@{
+    ViewData["Title"] = "Review Grant - " + Model.Grant.Title;
+}
+
+<h2>Review Grant Application</h2>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>@Model.Grant.Title</h4>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <strong>Project Director:</strong> @(Model.Grant.ProjectDirector?.Email ?? "—")
+        </div>
+
+        <div class="mb-3">
+            <strong>Department:</strong> @(Model.Grant.Department?.Name ?? "—")
+        </div>
+
+        <div class="mb-3">
+            <strong>Description:</strong>
+            <p>@Model.Grant.Description</p>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Grant.Justification))
+        {
+            <div class="mb-3">
+                <strong>Justification:</strong>
+                <p style="white-space: pre-wrap;">@Model.Grant.Justification</p>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Grant.EducationalEnhancement))
+        {
+            <div class="mb-3">
+                <strong>How does the program enhance the educational experience of WSU students?</strong>
+                <p style="white-space: pre-wrap;">@Model.Grant.EducationalEnhancement</p>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Grant.StudentImpact))
+        {
+            <div class="mb-3">
+                <strong>Student Impact:</strong> @Model.Grant.StudentImpact
+            </div>
+        }
+
+        @if (Model.Grant.DepartmentsInvolved.HasValue)
+        {
+            <div class="mb-3">
+                <strong>Departments Involved:</strong> @Model.Grant.DepartmentsInvolved
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Grant.ProjectTimeline))
+        {
+            <div class="mb-3">
+                <strong>Project Timeline:</strong>
+                <p style="white-space: pre-wrap;">@Model.Grant.ProjectTimeline</p>
+            </div>
+        }
+
+        @if (Model.Grant.UsesHumanOrAnimalSubjects.HasValue)
+        {
+            <div class="mb-3">
+                <strong>Uses Human or Animal Subjects:</strong> @(Model.Grant.UsesHumanOrAnimalSubjects.Value ? "Yes" : "No")
+            </div>
+
+            @if (Model.Grant.UsesHumanOrAnimalSubjects.Value && !string.IsNullOrWhiteSpace(Model.Grant.IrbApprovalFile))
+            {
+                <div class="mb-3">
+                    <strong>IRB Approval File:</strong>
+                    <a href="@Model.Grant.IrbApprovalFile" download class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-download"></i> Download IRB Approval
+                    </a>
+                </div>
+            }
+        }
+
+        <div class="mb-3">
+            <strong>Evaluation Method:</strong>
+            <p style="white-space: pre-wrap;">@Model.Grant.EvaluationMethod</p>
+        </div>
+
+        <div class="mb-3">
+            <strong>Dissemination:</strong>
+            <p style="white-space: pre-wrap;">@Model.Grant.Dissemination</p>
+        </div>
+
+        @if (Model.SubmittedFilePaths.Any())
+        {
+            <div class="mb-3">
+                <strong>Supporting Files:</strong>
+                <ul class="list-unstyled">
+                    @foreach (var filePath in Model.SubmittedFilePaths)
+                    {
+                        <li>
+                            <a href="@filePath" download class="btn btn-sm btn-outline-secondary mb-1">
+                                <i class="bi bi-download"></i> Download @System.IO.Path.GetFileName(filePath)
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.Grant.BudgetItems != null && Model.Grant.BudgetItems.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Budget Items</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Department</th>
+                        <th>College</th>
+                        <th>ARCC</th>
+                        <th>Other</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Grant.BudgetItems)
+                    {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>@item.ItemType</td>
+                            <td>$@item.DepartmentAmount.ToString("N2")</td>
+                            <td>$@item.CollegeAmount.ToString("N2")</td>
+                            <td>$@item.ArccAmount.ToString("N2")</td>
+                            <td>$@item.OtherAmount.ToString("N2")</td>
+                            <td>$@((item.DepartmentAmount + item.CollegeAmount + item.ArccAmount + item.OtherAmount).ToString("N2"))</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold">
+                        <td colspan="2">Totals</td>
+                        <td>$@Model.GetTotalAmount(b => b.DepartmentAmount).ToString("N2")</td>
+                        <td>$@Model.GetTotalAmount(b => b.CollegeAmount).ToString("N2")</td>
+                        <td>$@Model.GetTotalAmount(b => b.ArccAmount).ToString("N2")</td>
+                        <td>$@Model.GetTotalAmount(b => b.OtherAmount).ToString("N2")</td>
+                        <td>$@Model.GetTotalAmount(b => b.DepartmentAmount + b.CollegeAmount + b.ArccAmount + b.OtherAmount).ToString("N2")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}
+
+@if (Model.ActiveRubric != null)
+{
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5>Grade Grant: @Model.ActiveRubric.Name</h5>
+            @if (Model.ExistingReview != null)
+            {
+                <small class="text-white-50">
+                    You previously reviewed this grant on @Model.ExistingReview.ReviewedDate.ToLocalTime().ToString("g")
+                    with a score of @Model.ExistingReview.FinalPercentage.ToString("F2")%
+                </small>
+            }
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="id" value="@Model.Grant.Id" />
+                
+                @foreach (var criteria in Model.ActiveRubric.Criteria.OrderBy(c => c.DisplayOrder))
+                {
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">@criteria.Title</label>
+                        @if (!string.IsNullOrWhiteSpace(criteria.Description))
+                        {
+                            <p class="text-muted small">@criteria.Description</p>
+                        }
+                        <select name="CriteriaScores[@criteria.Id]" class="form-select" required>
+                            <option value="">-- Select Score --</option>
+                            @foreach (var option in criteria.ScoreOptions.OrderByDescending(so => so.Value))
+                            {
+                                var isSelected = Model.CriteriaScores.TryGetValue(criteria.Id, out var selectedValue) && selectedValue == option.Value;
+                                <option value="@option.Value" selected="@isSelected">
+                                    @option.Value points@(!string.IsNullOrWhiteSpace(option.Description) ? $" - {option.Description}" : "")
+                                </option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="mb-4">
+                    <label asp-for="ReviewNotes" class="form-label fw-bold">Review Notes (Optional)</label>
+                    <textarea asp-for="ReviewNotes" class="form-control" rows="5" placeholder="Add any additional comments or feedback about this grant..."></textarea>
+                    <small class="form-text text-muted">
+                        Use this space to provide feedback that can't be expressed as a number, such as missing files or additional observations.
+                    </small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        @(Model.ExistingReview != null ? "Update Review" : "Submit Review")
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <strong>No Active Rubric:</strong> A rubric must be created before grants can be reviewed. Please contact an administrator.
+    </div>
+    <a asp-page="Index" class="btn btn-secondary">Back to Review List</a>
+}

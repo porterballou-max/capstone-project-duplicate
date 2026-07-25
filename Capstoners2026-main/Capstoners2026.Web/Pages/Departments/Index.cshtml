@@ -1,0 +1,32 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Departments.IndexModel
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<h2>Departments</h2>
+<a class="btn btn-primary mb-3" asp-page="Create">+ Add Department</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Department Name</th>
+            <th>College</th>
+            <th>Chair</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var dept in Model.Departments)
+        {
+            <tr>
+                <td>@dept.Name</td>
+                <td>@(dept.College?.Name ?? "—")</td>
+                <td>@(dept.Chair?.Email ?? "—")</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@dept.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

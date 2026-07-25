@@ -1,0 +1,18 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Grants.ApproveModel
+@{
+}
+
+<form method="post" enctype="multipart/form-data" class="mt-3">
+
+	<input type="hidden" asp-for="AssignedApprovalContext" />
+	<input type="hidden" asp-for="GrantId" />
+
+	<h2>Review & Approve Grant</h2>
+	<fieldset disabled>
+		<partial name="_GrantForm" model="Model.GrantViewModel" />
+	</fieldset>
+	<button type="submit" class="btn btn-success" name="decision" value="0">Approve</button>
+	<button type="submit" class="btn btn-danger" name="decision" value="1">Reject</button>
+	@* <button type="submit" class="btn btn-primary" name="decision" value="2">Send to Accounting</button> *@
+</form>

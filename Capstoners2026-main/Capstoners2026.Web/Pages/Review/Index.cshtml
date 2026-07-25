@@ -1,0 +1,75 @@
+@page
+@model Capstoners2026.Web.Pages.Review.IndexModel
+@{
+    ViewData["Title"] = "Review Grants";
+}
+
+<h2>Review Grants</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Grant Title</th>
+            <th>Project Director</th>
+            <th>ARCC Funding Requested</th>
+            <th>Reviews</th>
+            <th>Avg Score</th>
+            <th>My Score</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grant in Model.Grants)
+        {
+            var myReview = Model.MyReviews.GetValueOrDefault(grant.Id);
+            var reviews = Model.GrantReviews.GetValueOrDefault(grant.Id, new List<GrantReview>());
+            var avgScore = Model.GetAverageScore(grant.Id);
+
+            <tr>
+                <td>@grant.Title</td>
+                <td>@(grant.ProjectDirector?.Email ?? "—")</td>
+                <td>$@Model.GetArccTotal(grant).ToString("N2")</td>
+                <td>
+                    @if (reviews.Any())
+                    {
+                        <span class="badge bg-info">@reviews.Count review(s)</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No reviews</span>
+                    }
+                </td>
+                <td>
+                    @if (reviews.Any())
+                    {
+                        <span class="fw-bold">@avgScore.ToString("F2")%</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+                <td>
+                    @if (myReview != null)
+                    {
+                        <span class="badge bg-success">@myReview.FinalPercentage.ToString("F2")%</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Not reviewed</span>
+                    }
+                </td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@grant.Id" class="btn btn-primary btn-sm">
+                        @(myReview != null ? "Update Review" : "Review")
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Grants.Any())
+{
+    <p class="text-muted">No submitted grants to review.</p>
+}

@@ -1,0 +1,27 @@
+﻿@model Capstoners2026.Web.Models.SelectCollegeModel
+
+
+
+<div class="modal fade" id="collegeModal" tabindex="-1" aria-labelledby="collegeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="ChangeCollege" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change College</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label asp-for="CollegeId" class="form-label">College</label>
+                    <select id="collegesDropdown" asp-for="CollegeId" asp-items="Model.CollegeOptions" class="form-select">
+                        <option value="">-- Select College --</option>
+                    </select>
+                    <span asp-validation-for="CollegeId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

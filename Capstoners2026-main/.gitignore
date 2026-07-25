@@ -1,0 +1,64 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+*.dll
+*.pdb
+*.exe
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.userprefs
+
+# ASP.NET / EF
+*.cache
+*.log
+*.tlog
+*.swp
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+**/Properties/launchSettings.json
+
+# Local databases / migrations artifacts
+*.mdf
+*.ldf
+*.db
+*.db-shm
+*.db-wal
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Test results
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# AI tooling
+.aider*
+.cursor/
+.windsurf/
+.codex/
+.continue/
+.copilot/
+.github/copilot/

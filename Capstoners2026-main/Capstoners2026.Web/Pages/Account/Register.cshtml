@@ -1,0 +1,119 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<div class="app-container">
+    <div class="main-content">
+        <div class="profile-container card p-4 shadow-sm mx-auto" style="max-width: 400px;">
+
+            <h3 class="text-center mb-4">Create Account</h3>
+
+            <form method="post" novalidate>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CollegeId" class="form-label">College</label>
+                    <select id="collegesDropdown" asp-for="CollegeId" asp-items="Model.CollegeOptions" class="form-select">
+                        <option value="">-- Select College --</option>
+                    </select>
+                    <span asp-validation-for="CollegeId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3" id="departmentsGroup" style="display: none;">
+                    <label asp-for="DepartmentId" class="form-label">Department</label>
+                    <select id="departmentsDropdown" asp-for="DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 mb-3">
+                    Create Account
+                </button>
+
+                <p class="text-center">
+                    Already have an account?
+                    <a asp-page="/Login">Login</a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const collegesDropdown = document.getElementById("collegesDropdown");
+        const departmentsDropdown = document.getElementById("departmentsDropdown")
+        const departmentsGroup = document.getElementById("departmentsGroup"); 
+
+        collegesDropdown.addEventListener("change", async function () {
+            const collegeId = this.value;
+
+            if (!collegeId) {
+                departmentsDropdown.innerHTML = '<option value="">-- Select Department --</option>';
+                departmentsGroup.style.display = 'none'; 
+                return;
+            }
+
+            try {
+                const response = await fetch(`?handler=GetDepartments&collegeId=${collegeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Important for Razor Pages
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Departments received:", data);
+
+                // Populate departments
+                departmentsDropdown.innerHTML = '<option value="">-- Select Department --</option>';
+
+                data.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    departmentsDropdown.appendChild(option);
+                });
+
+                // Only reveal the department dropdown menu after populating 
+                departmentsGroup.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error loading departments:", error);
+                document.getElementById("collegeDebugFeedback").textContent = "Error loading departments";
+                departmentsGroup.style.display = 'none';
+            }
+        });
+    </script>
+}

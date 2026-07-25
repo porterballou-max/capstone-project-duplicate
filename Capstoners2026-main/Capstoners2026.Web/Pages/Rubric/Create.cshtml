@@ -1,0 +1,130 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Rubric.CreateModel
+@{
+    ViewData["Title"] = "Create Rubric";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<h2>Create Rubric</h2>
+
+<form method="post">
+    <!-- Basic Information -->
+    <div class="container-lg-0 p-2">
+        <h4>Basic Information</h4>
+        <div class="container-md border rounded p-3">
+            <label class="form-label">Rubric Name</label>
+            <input class="form-control" type="text" name="Name" required />
+        </div>
+    </div>
+
+    <!-- Criteria -->
+    <div class="container-lg p-2">
+        <h4>Criteria</h4>
+        <div id="criteria-container"></div>
+    </div>
+
+    <div class="container-lg p-2 d-flex justify-content-center">
+        <button type="button" class="btn btn-primary" onclick="addCriteria()">
+            <i class="bi bi-plus-circle-fill"></i> Add Criteria
+        </button>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle-fill"></i> Submit
+        </button>
+        <a href="/Rubric" class="btn btn-danger">
+            <i class="bi bi-x-circle-fill"></i> Discard
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        let criteriaCount = 0;
+
+        function addCriteria() {
+            const container = document.getElementById('criteria-container');
+            const index = criteriaCount++;
+
+            const div = document.createElement('div');
+            div.className = 'container-md border rounded p-3 mb-3';
+            div.id = `criteria-${index}`;
+            div.innerHTML = `
+                <div class="mb-3">
+                    <label class="form-label">Criteria Title</label>
+                    <input class="form-control" type="text" name="Criteria[${index}].Title" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="Criteria[${index}].Description" rows="2"></textarea>
+                </div>
+
+                <div class="border rounded p-3 mb-2">
+                    <label class="form-label">Score Options</label>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>Description</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="scores-${index}"></tbody>
+                    </table>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addScoreOption(${index})">
+                        <i class="bi bi-plus-circle-fill"></i> Add New
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="toggleElements(${index})">
+                        <i class="bi bi-eye-fill"></i> Show/Hide
+                    </button>
+                </div>
+
+                <div class="d-flex flex-row-reverse p-3">
+                    <button type="button" class="btn btn-danger" onclick="removeCriteria(${index})">
+                        <i class="bi bi-x-circle-fill"></i> Delete Criteria
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(div);
+            addScoreOption(index);
+            addScoreOption(index);
+            addScoreOption(index);
+        }
+
+        function addScoreOption(criteriaIndex) {
+            const tbody = document.getElementById(`scores-${criteriaIndex}`);
+            const scoreIndex = tbody.rows.length;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input class="form-control" type="number"
+                        name="Criteria[${criteriaIndex}].ScoreOptions[${scoreIndex}].Value"
+                        required />
+                </td>
+                <td>
+                    <input class="form-control" type="text"
+                        name="Criteria[${criteriaIndex}].ScoreOptions[${scoreIndex}].Description" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function toggleElements(criteriaIndex) {
+            const tbody = document.getElementById(`scores-${criteriaIndex}`);
+            tbody.style.display = tbody.style.display === 'none' ? '' : 'none';
+        }
+
+        function removeCriteria(index) {
+            document.getElementById(`criteria-${index}`).remove();
+        }
+    </script>
+}

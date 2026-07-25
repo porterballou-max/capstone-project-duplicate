@@ -1,0 +1,42 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Rubric.IndexModel
+@{
+    ViewData["Title"] = "Rubrics";
+}
+
+<h2>Rubrics</h2>
+
+<div class="mb-3">
+    <a href="/Rubric/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill"></i> Create New Rubric
+    </a>
+</div>
+
+@if (!Model.Rubrics.Any())
+{
+    <p>No rubrics have been created yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rubric in Model.Rubrics)
+            {
+                <tr>
+                    <td>@rubric.Name</td>
+                    <td>
+                        <a href="/Rubric/Edit?id=@rubric.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

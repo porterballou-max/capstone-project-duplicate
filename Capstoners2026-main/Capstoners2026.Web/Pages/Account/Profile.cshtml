@@ -1,0 +1,42 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Account.ProfileModel
+@{
+}
+
+
+<h2>@Model.ApplicationUser.Email</h2>
+
+<div class="container z-0">
+
+    <h3>Profile Information</h3>
+    <p>College: @Model.CollegeName</p>
+    <p>Department: @Model.DepartmentName</p>
+    <p>Account Number: @Model.AccountNumber</p>
+
+    <h3>Profile Controls</h3>
+
+    <div class="list-group">
+        <a data-bs-toggle="modal" data-bs-target="#emailModal" class="btn list-group-item list-group-item-action">Reset Email</a>
+        <a data-bs-toggle="modal" data-bs-target="#passwordModal" class="btn list-group-item list-group-item-action">Reset Password</a>
+        <a data-bs-toggle="modal" data-bs-target="#collegeModal" class="btn list-group-item list-group-item-action">Change College</a>
+        <a data-bs-toggle="modal" data-bs-target="#departmentModal" class="btn list-group-item list-group-item-action">Change Department</a>
+        <a data-bs-toggle="modal" data-bs-target="#accountNumberModal" class="btn list-group-item list-group-item-action">Change Account Number</a>
+    </div>
+
+     <!-- College Modal -->
+    <partial name="_ResetEmail" model="Model.ResetEmailModel" />
+
+    <!-- College Modal -->
+    <partial name="_ResetPassword" model="Model.ResetPasswordModel" />
+
+    <!-- College Modal -->
+    <partial name="_SelectCollege" model="Model.SelectCollegeModel" />
+
+    <!-- Department Modal -->
+    <partial name="_SelectDepartment" model="Model.SelectDepartmentModel" />
+
+    <!-- Account Number Modal -->
+    <partial name="_SelectAccountNumber" model="Model.SelectAccountNumberModel" />
+
+
+</div>

@@ -1,0 +1,27 @@
+﻿@using Capstoners2026.Web.Data; 
+@model Models.SelectAccountNumberModel
+
+<div class="modal fade" id="accountNumberModal" tabindex="-1" aria-labelledby="accountNumberModalLabel" aria-hidden="true">
+    
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="ChangeAccountNumber" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change Account Number</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label asp-for="AccountNumber" class="form-label">Account Number</label>
+                    <input type="text" asp-for="AccountNumber" class="form-control" />
+                    <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

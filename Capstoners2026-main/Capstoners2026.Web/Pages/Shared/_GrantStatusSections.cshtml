@@ -1,0 +1,162 @@
+@model Capstoners2026.Web.Models.GrantStatusSectionsViewModel
+
+<h4 class="mt-3">Grants (Before Submission)</h4>
+
+@if (Model.Drafts.Count == 0)
+{
+    <p class="text-muted">No grants in progress.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+
+        <thead>
+            <tr>
+                <th style="width:40%">Title</th>
+                <th style="width:35%">Department</th>
+                <th style="width:25%">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var grant in Model.Drafts)
+            {
+                <tr>
+                    <td>@grant.Title</td>
+                    <td>@(grant.Department?.Name ?? "—")</td>
+                    <td>
+                        <a class="btn btn-outline-secondary btn-sm"
+                           asp-page="/Grants/Edit"
+                           asp-route-id="@grant.Id">
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+<h4 class="mt-3">Submitted Grants</h4>
+
+@if (Model.Submitted.Count == 0)
+{
+    <p class="text-muted">No grants awaiting review.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+
+        <thead>
+            <tr>
+                <th style="width:40%">Title</th>
+                <th style="width:35%">Department</th>
+                <th style="width:25%">Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var grant in Model.Submitted)
+            {
+                var status = grant.DepartmentChairApprovalStatus == Grant.ApprovalStatus.Pending
+                    ? "Awaiting Department Chair"
+                    : "Awaiting College Dean";
+
+                <tr>
+                    <td>@grant.Title</td>
+                    <td>@(grant.Department?.Name ?? "—")</td>
+                    <td>
+                        <span class="badge text-bg-warning">@status</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+<h4 class="mt-3">Approved Grants</h4>
+
+@if (Model.Approved.Count == 0)
+{
+    <p class="text-muted">No approved grants.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+
+        <thead>
+            <tr>
+                <th style="width:35%">Title</th>
+                <th style="width:25%">Department</th>
+                <th style="width:15%">Award Date</th>
+                <th style="width:25%">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var grant in Model.Approved)
+            {
+                <tr>
+                    <td>@grant.Title</td>
+                    <td>@(grant.Department?.Name ?? "—")</td>
+                    <td>@(grant.AwardDate?.ToString("MM/dd/yyyy") ?? "—")</td>
+                    <td>
+                        @if (Model.ReportedGrantIds.Contains(grant.Id))
+                        {
+                            <span class="badge text-bg-success">Report Submitted</span>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary btn-sm"
+                               asp-page="/Grants/Report"
+                               asp-route-id="@grant.Id">
+                                Submit Report
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+<h4 class="mt-3">Rejected Grants</h4>
+
+@if (Model.Rejected.Count == 0)
+{
+    <p class="text-muted">No rejected grants.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+
+        <thead>
+            <tr>
+                <th style="width:40%">Title</th>
+                <th style="width:35%">Department</th>
+                <th style="width:25%">Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var grant in Model.Rejected)
+            {
+                var rejectedBy = grant.DepartmentChairApprovalStatus == Grant.ApprovalStatus.Rejected
+                    ? "Rejected by Department Chair"
+                    : "Rejected by College Dean";
+
+                <tr>
+                    <td>@grant.Title</td>
+                    <td>@(grant.Department?.Name ?? "—")</td>
+                    <td>
+                        <span class="badge text-bg-danger">@rejectedBy</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}

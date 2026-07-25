@@ -1,0 +1,360 @@
+﻿@using Capstoners2026.Web.Data
+@using Newtonsoft.Json
+@model Capstoners2026.Web.Models.GrantViewModel
+
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<input type="hidden" asp-for="Grant.Id" />
+
+<div class="mb-3">
+    <label asp-for="Grant.Title" class="form-label">Title</label>
+    <input asp-for="Grant.Title" class="form-control" />
+    <span asp-validation-for="Grant.Title" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.Description" class="form-label">Description</label>
+    <textarea asp-for="Grant.Description" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="Grant.Description" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.ProjectDirectorId" class="form-label">
+        Project Director
+    </label>
+
+    @if (Model.IsReadOnly)
+    {
+        @if (Model.Grant != null && Model.Grant.ProjectDirector != null)
+        {
+            <input type="text" value="@Model.Grant.ProjectDirector.UserName" class="form-control" />
+        }
+        else
+        {
+            <input type="text" value="None" class="form-control" />
+        }
+    }
+    else
+    {
+        <select asp-for="Grant.ProjectDirectorId"
+                asp-items="Model.UserOptions"
+                class="form-select">
+        </select>
+        <span asp-validation-for="Grant.ProjectDirectorId" class="text-danger"></span>
+    }
+</div>
+
+<div class="mb-3">
+    @if (Model.IsReadOnly)
+    {
+        <label asp-for="Grant.AccountNumber" class="form-label">Account Number</label>
+        <input type="text" asp-for="Grant.AccountNumber" class="form-control" />
+        <span asp-validation-for="Grant.AccountNumber" class="text-danger"></span>
+    }
+    else
+    {
+        <label class="form-label">Account Number</label>
+        <p class="small">The Account Number tied to this Grant will inherit from the Account Number of the Project Director.
+            <br />If the Project Director has no Account Number, the Grant will also have no Account Number.</p>
+    }
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.DepartmentId" class="form-label">Department</label>
+    @if (Model.IsReadOnly)
+    {
+        @if (Model.Grant != null && Model.Grant.Department != null)
+        {
+            <input type="text" value="@Model.Grant.Department.Name" class="form-control" />
+        }
+        else
+        {
+            <input type="text" value="None" class="form-control" />
+        }
+    }
+    else
+    {
+        <select asp-for="Grant.DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
+            <option value="">-- Select Department --</option>
+        </select>
+        <span asp-validation-for="Grant.DepartmentId" class="text-danger"></span>
+    }    
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.Justification" class="form-label">Justification</label>
+    <textarea asp-for="Grant.Justification" class="form-control" rows="15"></textarea>
+    <span asp-validation-for="Grant.Justification" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.EducationalEnhancement" class="form-label">How does the program enhance the educational experience of WSU students?</label>
+    <textarea asp-for="Grant.EducationalEnhancement" class="form-control" rows="6"></textarea>
+    <span asp-validation-for="Grant.EducationalEnhancement" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.StudentImpact" class="form-label">How many students will the project impact?</label>
+    <input asp-for="Grant.StudentImpact" type="number" min="0" class="form-control" />
+    <span asp-validation-for="Grant.StudentImpact" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Multiple departments/programs involved?</label>
+
+    <div class="form-check">
+        <input type="radio"
+               name="multipleDepts"
+               value="no"
+               class="form-check-input"
+               id="multipleDepts-no"
+               checked
+               onclick="
+                   document.getElementById('Grant_DepartmentsInvolved').value='1';
+                   document.getElementById('Grant_DepartmentsInvolved').disabled=true;
+                   document.getElementById('deptsInvolvedDiv').style.display='none';
+               " />
+        <label class="form-check-label" for="multipleDepts-no">No</label>
+    </div>
+
+    <div class="form-check">
+        <input type="radio"
+               name="multipleDepts"
+               value="yes"
+               class="form-check-input"
+               id="multipleDepts-yes"
+               onclick="
+                   document.getElementById('Grant_DepartmentsInvolved').disabled=false;
+                   document.getElementById('deptsInvolvedDiv').style.display='block';
+               " />
+        <label class="form-check-label" for="multipleDepts-yes">Yes</label>
+    </div>
+</div>
+
+<div class="mb-3" id="deptsInvolvedDiv" style="display:none;">
+    <label asp-for="Grant.DepartmentsInvolved" class="form-label">How many departments?</label>
+    <input asp-for="Grant.DepartmentsInvolved"
+           id="Grant_DepartmentsInvolved"
+           type="number"
+           min="2"
+           class="form-control"
+           disabled />
+    <span asp-validation-for="Grant.DepartmentsInvolved" class="text-danger"></span>
+</div>
+
+<input type="hidden" asp-for="Grant.DepartmentsInvolved" value="1" />
+
+<div class="mb-3">
+    <label asp-for="Grant.ProjectTimeline" class="form-label">Project Timeline</label>
+    <textarea asp-for="Grant.ProjectTimeline" class="form-control" rows="10"></textarea>
+    <span asp-validation-for="Grant.ProjectTimeline" class="text-danger"></span>
+</div>
+
+<h4>Budget Worksheet</h4>
+
+<div class="card p-3 mb-3">
+    <p class="mb-2">
+        Add, edit, or review detailed budget items on the Budget Worksheet.
+    </p>
+
+    @if (Model.IsReadOnly)
+    {
+        <a asp-page="/Grants/BudgetWorksheet"
+           asp-route-id="@Model.Grant.Id"
+           class="btn btn-outline-primary">
+            View Budget Worksheet
+        </a>
+    }
+    else if (Model.Grant.Id == 0)
+    {
+        <div class="alert alert-warning mb-0">
+            Save this grant as a draft before opening the Budget Worksheet.
+        </div>
+    }
+    else
+    {
+        <a asp-page="/Grants/BudgetWorksheet"
+           asp-route-id="@Model.Grant.Id"
+           class="btn btn-primary">
+            Open Budget Worksheet
+        </a>
+    }
+</div>
+
+<div class="card p-3 mb-3">
+
+    <h5>Funding Totals</h5>
+
+    <p>Department: $<span id="deptTotal">
+            @Model.Grant.BudgetItems.Select(i => i.DepartmentAmount).Sum()
+        </span></p>
+
+    <p>College: $<span id="collegeTotal">
+            @Model.Grant.BudgetItems.Select(i => i.CollegeAmount).Sum()
+    </span></p>
+
+    <p>ARCC: $<span id="arccTotal">
+            @Model.Grant.BudgetItems.Select(i => i.ArccAmount).Sum()
+    </span></p>
+
+    <p>Other: $<span id="otherTotal">
+            @Model.Grant.BudgetItems.Select(i => i.OtherAmount).Sum()
+    </span></p>
+
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Are there matching funds available for this grant?</label>
+    <div class="form-check">
+        <input type="checkbox" asp-for="Grant.HasMatchingFunds" class="form-check-input" id="hasMatchingFunds"
+               onclick="document.getElementById('matchingFundsDiv').style.display = this.checked ? 'block' : 'none';" />
+        <label class="form-check-label" for="hasMatchingFunds">Yes</label>
+    </div>
+</div>
+
+<div class="mb-3" id="matchingFundsDiv" style="display:none;">
+    <label asp-for="Grant.MatchingFundsAmount" class="form-label">Matching Funds Amount ($)</label>
+    <input asp-for="Grant.MatchingFundsAmount" type="number" step="0.01" min="0" class="form-control" />
+    <span asp-validation-for="Grant.MatchingFundsAmount" class="text-danger"></span>
+</div>
+
+
+<div class="mb-3">
+    <label asp-for="Grant.EvaluationMethod" class="form-label">Evaluation Method</label>
+    <textarea asp-for="Grant.EvaluationMethod" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Grant.EvaluationMethod" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.Dissemination" class="form-label">Dissemination</label>
+    <textarea asp-for="Grant.Dissemination" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Grant.Dissemination" class="text-danger"></span>
+</div>
+
+@if (Model.IsReadOnly == false)
+{
+    <div class="mb-3">
+        <label class="form-label">Supporting Files (up to 3)</label>
+        <input type="file" name="UploadedFiles" class="form-control mb-2" />
+        <input type="file" name="UploadedFiles" class="form-control mb-2" />
+        <input type="file" name="UploadedFiles" class="form-control" />
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <h3>Submitted Files</h3>
+
+        @if (Model.Grant.SubmittedFiles != null) {
+
+            try {
+                @* Provide links to all uploaded files *@
+                string[] paths = JsonConvert.DeserializeObject<string[]>(Model.Grant.SubmittedFiles);
+                <div class="list-group">
+                    @for (int i = 0; i < paths.Length; i++)
+                    {
+                        var path = paths[i];
+                        <a class="list-group-item link-primary" href=@path>File #@i</a>
+                    }
+                </div>
+            }
+            catch (Exception e) {
+                <a class="list-group-item">An unexpected error occurred while trying to load files.</a>
+                <br />
+                <a class="list-group-item text-danger">@e.Message</a>
+            }
+
+        }
+        else
+        {
+            <h4>No files uploaded.</h4>
+        }
+
+    </div>
+}
+
+<div class="mb-3">
+    <label class="form-label">Does the project use human or animal subjects?</label>
+    <div class="form-check">
+        <input type="radio" name="humanAnimalSubjects" value="no" class="form-check-input" id="humanAnimalSubjects-no" checked onclick="document.getElementById('Grant_UsesHumanOrAnimalSubjects').value='false'; document.getElementById('irbFileDiv').style.display='none';" />
+        <label class="form-check-label" for="humanAnimalSubjects-no">No</label>
+    </div>
+    <div class="form-check">
+        <input type="radio" name="humanAnimalSubjects" value="yes" class="form-check-input" id="humanAnimalSubjects-yes" onclick="document.getElementById('Grant_UsesHumanOrAnimalSubjects').value='true'; document.getElementById('irbFileDiv').style.display='block';" />
+        <label class="form-check-label" for="humanAnimalSubjects-yes">Yes</label>
+    </div>
+</div>
+
+@if (Model.IsReadOnly == false)
+{
+    <input type="hidden" asp-for="Grant.UsesHumanOrAnimalSubjects" value="false" />
+    <div class="mb-3" id="irbFileDiv" style="display:none;">
+        <label class="form-label">IRB Approval File</label>
+        <input type="file" name="IrbApprovalFile" class="form-control" />
+    </div>
+    <hr />
+}
+else
+{
+    @if (Model.Grant.IrbApprovalFile != null)
+    {
+        <div class="mb-3">
+            <h5>IRB Approval File</h5>
+            <div class="list-group">
+                <a class="list-group-item link-primary" href=@Model.Grant.IrbApprovalFile>Click here to view/download</a>
+            </div>
+        </div>
+
+    }
+}
+
+<h4>Acknowledgements</h4>
+
+<div class="form-check">
+    <input class="form-check-input"
+           asp-for="Grant.Acknowledgement1" />
+
+    <label class="form-check-label">
+        I certify that all information provided is accurate.
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input"
+           asp-for="Grant.Acknowledgement2" />
+
+    <label class="form-check-label">
+        I understand that incomplete applications may be rejected.
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input"
+           asp-for="Grant.Acknowledgement3" />
+
+    <label class="form-check-label">
+        I agree to follow university policies.
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input"
+           asp-for="Grant.Acknowledgement4" />
+
+    <label class="form-check-label">
+        I understand submission is final.
+    </label>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Grant.ESignName" class="form-label">
+        Electronic Signature (Full Name)
+    </label>
+
+    <input asp-for="Grant.ESignName"
+           class="form-control" />
+
+    <span asp-validation-for="Grant.ESignName"
+          class="text-danger"></span>
+</div>

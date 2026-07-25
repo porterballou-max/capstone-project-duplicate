@@ -1,0 +1,26 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Colleges.CreateModel
+@{
+    ViewData["Title"] = "Add College";
+}
+
+<h2>Add College</h2>
+
+<form method="post" class="mt-3">
+    <div class="mb-3">
+        <label asp-for="College.Name" class="form-label">College Name</label>
+        <input asp-for="College.Name" class="form-control" />
+        <span asp-validation-for="College.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="College.DeanId" class="form-label">Dean</label>
+        <select asp-for="College.DeanId" asp-items="Model.UserOptions" class="form-select">
+            <option value="">-- Select a Dean --</option>
+        </select>
+        <span asp-validation-for="College.DeanId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

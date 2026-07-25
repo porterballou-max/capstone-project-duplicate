@@ -1,0 +1,115 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="app-container">
+
+
+    <!-- College Modal -->
+    <partial name="_GrantsMissingReports" model="Model.GrantsMissingReportsModel" />
+
+    <div class="main-content">
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="container border rounded p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">My Grants</h2>
+                    <a class="btn btn-primary" asp-page="/Grants/Create">+ Add Grant</a>
+                </div>
+                <partial name="_GrantStatusSections" model="Model.MyGrants" />
+            </div>
+        }
+
+        @if (Model.DepartmentGrants.Count() > 0)
+        {
+            <div class="container border rounded p-3">
+                <h2>Department Chair</h2>
+                @foreach (var pair in Model.DepartmentGrants)
+                {
+                    @* If no grants exist for this department, provide a bit of info and skip. *@
+                    @if (pair.Value.Count() == 0)
+                    {
+                        <h3>@pair.Key.Name</h3>
+                        <h4 class="text-light-emphasis">No grants are awaiting your review.</h4>
+                        continue;
+                    }
+
+                    <table class="table caption-top">
+                        @* Department Name *@
+                        <caption class="h3">@pair.Key.Name</caption>
+
+                        <thead>
+                            <tr>
+                                <th style="width:35%">Title</th>
+                                <th style="width:35%">ARCC Budget Sum</th>
+                                <th style="width:20%">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @* Iterate through each grant... *@
+                            @foreach (var grant in pair.Value)
+                            {
+                                <tr>
+                                    <td>@grant.Title</td>
+                                    <td>@Model.ARCCBudget[grant]</td>
+                                    <td>
+                                        <a asp-page="Grants/Approve" asp-route-id="@grant.Id" asp-route-role="0" class="btn btn-primary">Review as Chair</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+
+        @if (Model.CollegeGrants.Count() > 0)
+        {
+            <div class="container border rounded p-3">
+                <h2>College Dean</h2>
+
+                @foreach (var pair in Model.CollegeGrants)
+                {
+                    @* If this college has one or more grants that require dean attention, we show them in a table. *@
+                    if (pair.Value != null && pair.Value.Count() > 0)
+                    {
+                        <table class="table caption-top">
+                            @* College name *@
+                            <caption class="h3">@pair.Key.Name</caption>
+
+                            <thead>
+                                <tr>
+                                    <th style="width:35%">Title</th>
+                                    <th style="width:35%">College Budget Sum</th>
+                                    <th style="width:30%">Actions</th>
+                                </tr>
+                            </thead>
+
+                            @* Iterate through each grant... *@
+                            @foreach (var grant in pair.Value)
+                            {
+                                <tr>
+                                    <td>@grant.Title</td>
+                                    <td>@Model.CollegeBudget[grant]</td>
+                                    <td>
+                                        <a asp-page="Grants/Approve" asp-route-id="@grant.Id" asp-route-role="1" class="btn btn-primary">Review as Dean</a>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                    else
+                    {
+                        <h3>@pair.Key.Name</h3>
+                        <p>No grants are awaiting your review.</p>
+                    }
+                }
+            </div>
+        }
+
+    </div>
+</div>

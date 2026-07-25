@@ -1,0 +1,70 @@
+@page "{id:int}"
+@model Capstoners2026.Web.Pages.Grants.ReportModel
+@{
+    ViewData["Title"] = "Submit Report";
+}
+
+<div class="card p-4">
+
+    <h2>Submit Report</h2>
+
+    <form method="post" enctype="multipart/form-data" class="mt-3">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="Report.GrantId" />
+
+        <div class="mb-3">
+            <label asp-for="Report.ProjectDirector" class="form-label">Project Director</label>
+            <input asp-for="Report.ProjectDirector" class="form-control" />
+            <span asp-validation-for="Report.ProjectDirector" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.ProjectTitle" class="form-label">Project Title</label>
+            <input asp-for="Report.ProjectTitle" class="form-control" />
+            <span asp-validation-for="Report.ProjectTitle" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.AwardDate" class="form-label">Award Date</label>
+            <input asp-for="Report.AwardDate" class="form-control" />
+            <span asp-validation-for="Report.AwardDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.ProjectSummary" class="form-label">Project Summary</label>
+            <textarea asp-for="Report.ProjectSummary" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Report.ProjectSummary" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.CurrentProgress" class="form-label">Current Progress</label>
+            <textarea asp-for="Report.CurrentProgress" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Report.CurrentProgress" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.NextSteps" class="form-label">Next Steps</label>
+            <textarea asp-for="Report.NextSteps" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Report.NextSteps" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Report.Budget" class="form-label">Budget</label>
+            <textarea asp-for="Report.Budget" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Report.Budget" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ReportFile" class="form-label">Report File (pdf)</label>
+            <input asp-for="ReportFile" type="file" accept=".pdf" class="form-control" />
+            <span asp-validation-for="ReportFile" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+        <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+
+    </form>
+
+</div>

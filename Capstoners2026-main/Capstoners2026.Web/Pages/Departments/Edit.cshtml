@@ -1,0 +1,35 @@
+﻿@page "{id:int}"
+@model Capstoners2026.Web.Pages.Departments.EditModel
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<h2>Edit Department</h2>
+
+<form method="post" class="mt-3">
+    <input type="hidden" asp-for="Department.Id" />
+    <div class="mb-3">
+        <label asp-for="Department.Name" class="form-label">Department Name</label>
+        <input asp-for="Department.Name" class="form-control" />
+        <span asp-validation-for="Department.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Department.CollegeId" class="form-label">College</label>
+        <select asp-for="Department.CollegeId" asp-items="Model.CollegeOptions" class="form-select">
+            <option value="">-- Select a College --</option>
+        </select>
+        <span asp-validation-for="Department.CollegeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Department.ChairId" class="form-label">Chair</label>
+        <select asp-for="Department.ChairId" asp-items="Model.UserOptions" class="form-select">
+            <option value="">-- Select a Chair --</option>
+        </select>
+        <span asp-validation-for="Department.ChairId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

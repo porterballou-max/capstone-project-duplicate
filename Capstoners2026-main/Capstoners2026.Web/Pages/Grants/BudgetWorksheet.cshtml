@@ -1,0 +1,127 @@
+﻿@page "{id:int}"
+@model Capstoners2026.Web.Pages.Grants.BudgetWorksheetModel
+
+@{
+    ViewData["Title"] = "Budget Worksheet";
+}
+
+<h2 class="page-title mb-3">Budget Worksheet</h2>
+
+<div class="card p-4 mb-4">
+    <h4>@Model.Grant.Title</h4>
+
+    <a asp-page="/Grants/Edit"
+       asp-route-id="@Model.Grant.Id"
+       class="btn btn-outline-secondary mt-2">
+        Back to Grant
+    </a>
+</div>
+
+<div class="card p-4 mb-4">
+    <h4 class="section-title mb-3">Add Budget Item</h4>
+
+    <form method="post" asp-page-handler="Add" asp-route-id="@Model.Grant.Id">
+
+        <div class="mb-3">
+            <label asp-for="NewBudgetItem.Title" class="form-label">Title</label>
+            <input asp-for="NewBudgetItem.Title" class="form-control" />
+            <span asp-validation-for="NewBudgetItem.Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NewBudgetItem.ItemType" class="form-label">Type</label>
+            <select asp-for="NewBudgetItem.ItemType" class="form-select">
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+            </select>
+            <span asp-validation-for="NewBudgetItem.ItemType" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label asp-for="NewBudgetItem.DepartmentAmount" class="form-label">Department</label>
+                <input asp-for="NewBudgetItem.DepartmentAmount" type="number" step="0.01" class="form-control" />
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="NewBudgetItem.CollegeAmount" class="form-label">College</label>
+                <input asp-for="NewBudgetItem.CollegeAmount" type="number" step="0.01" class="form-control" />
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="NewBudgetItem.ArccAmount" class="form-label">ARCC</label>
+                <input asp-for="NewBudgetItem.ArccAmount" type="number" step="0.01" class="form-control" />
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="NewBudgetItem.OtherAmount" class="form-label">Other</label>
+                <input asp-for="NewBudgetItem.OtherAmount" type="number" step="0.01" class="form-control" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Add Budget Item
+        </button>
+    </form>
+</div>
+
+<div class="card p-4 mb-4">
+    <h4 class="section-title mb-3">Current Budget Items</h4>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Department</th>
+                <th>College</th>
+                <th>ARCC</th>
+                <th>Other</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Grant.BudgetItems)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.ItemType</td>
+                    <td>@item.DepartmentAmount.ToString("C")</td>
+                    <td>@item.CollegeAmount.ToString("C")</td>
+                    <td>@item.ArccAmount.ToString("C")</td>
+                    <td>@item.OtherAmount.ToString("C")</td>
+                    <td>
+                        @(
+                                            (item.DepartmentAmount +
+                                            item.CollegeAmount +
+                                            item.ArccAmount +
+                                            item.OtherAmount).ToString("C")
+                                            )
+                    </td>
+                    <td>
+                        <form method="post"
+                              asp-page-handler="Delete"
+                              asp-route-id="@Model.Grant.Id"
+                              asp-route-budgetItemId="@item.Id">
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="card p-4">
+    <h4 class="section-title mb-3">Funding Totals</h4>
+
+    <p>Department: @Model.Grant.BudgetItems.Sum(i => i.DepartmentAmount).ToString("C")</p>
+    <p>College: @Model.Grant.BudgetItems.Sum(i => i.CollegeAmount).ToString("C")</p>
+    <p>ARCC: @Model.Grant.BudgetItems.Sum(i => i.ArccAmount).ToString("C")</p>
+    <p>Other: @Model.Grant.BudgetItems.Sum(i => i.OtherAmount).ToString("C")</p>
+</div>

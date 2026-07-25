@@ -1,0 +1,35 @@
+﻿@model Capstoners2026.Web.Models.ResetEmailModel
+
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="ChangeEmail" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change Model</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="CurrentEmail"></label>
+                        <input class="form-control" asp-for="CurrentEmail" type="email" />
+                        <span asp-validation-for="CurrentEmail" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="NewEmail"></label>
+                        <input class="form-control" asp-for="NewEmail" type="email" />
+                        <span asp-validation-for="NewEmail" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="ConfirmNewEmail"></label>
+                        <input class="form-control" asp-for="ConfirmNewEmail" type="email" />
+                        <span asp-validation-for="ConfirmNewEmail" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

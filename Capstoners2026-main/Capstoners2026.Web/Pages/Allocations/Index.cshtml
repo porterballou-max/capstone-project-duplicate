@@ -1,0 +1,474 @@
+﻿@page
+@model Capstoners2026.Web.Pages.Allocations.IndexModel
+
+@{
+    ViewData["Title"] = "Allocations";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="page-title mb-1">Allocations</h2>
+
+        <p class="text-muted mb-0">
+            Manage funding rounds, available funds, and cutoff percentages.
+        </p>
+    </div>
+
+</div>
+
+<div class="card shadow-sm p-4 mb-4">
+
+    <h4 class="section-title mb-3">
+        Create Funding Round
+    </h4>
+
+    <form method="post">
+
+        <div class="mb-3">
+            <label asp-for="NewRound.Name" class="form-label">
+                Round Name
+            </label>
+
+            <input asp-for="NewRound.Name"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NewRound.NewFundsAvailable"
+                   class="form-label">
+
+                New Funds Available
+
+            </label>
+
+            <input asp-for="NewRound.NewFundsAvailable"
+                   type="number"
+                   step="0.01"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-4">
+
+            <label asp-for="NewRound.CutoffPercentage"
+                   class="form-label">
+
+                Cutoff Percentage
+
+            </label>
+
+            <input asp-for="NewRound.CutoffPercentage"
+                   type="number"
+                   step="0.1"
+                   class="form-control" />
+
+            <div class="form-text">
+                Example: Enter 70 for a 70% funding threshold.
+            </div>
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            Create Round
+
+        </button>
+
+    </form>
+
+</div>
+
+<div class="card shadow-sm p-4">
+
+    <h4 class="section-title mb-3">
+        Funding Rounds
+    </h4>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>New Funds</th>
+                    <th>Rolled Over</th>
+                    <th>Total</th>
+                    <th>Cutoff</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var round in Model.Rounds)
+                {
+                    <tr>
+
+                        <td>
+                            <strong>@round.Name</strong>
+                        </td>
+
+                        <td>
+                            @round.NewFundsAvailable.ToString("C")
+                        </td>
+
+                        <td>
+                            @round.RolledOverFunds.ToString("C")
+                        </td>
+
+                        <td>
+
+                            <span class="fw-bold text-success">
+
+                                @round.TotalFundsAvailable.ToString("C")
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            @round.CutoffPercentage%
+
+                        </td>
+
+                        <td>
+
+                            @if (round.IsActive)
+                            {
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    Closed
+                                </span>
+                            }
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm p-4 mt-4">
+
+    <h4 class="section-title mb-3">
+        Current Round Allocation
+    </h4>
+
+    <form method="post" asp-page-handler="ApplyCutoff" class="row mb-4">
+
+        <div class="col-md-3">
+            <label asp-for="CutoffPercentage" class="form-label">
+                Cutoff Percentage
+            </label>
+
+            <input asp-for="CutoffPercentage"
+                   type="number"
+                   step="0.1"
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-warning">
+                Apply Cutoff
+            </button>
+        </div>
+
+    </form>
+
+    @if (!Model.CutoffApplied)
+    {
+        <h5 class="mb-3">All Eligible Grants</h5>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Grant</th>
+                        <th>Principal Investigator</th>
+                        <th>ARCC Requested</th>
+                        <th>Total Project Cost</th>
+                        <th>Score</th>
+                        <th>Allocated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var grant in Model.Grants)
+                    {
+                        <tr>
+                            <td>@grant.Title</td>
+                            <td>@grant.ProjectDirector?.Email</td>
+                            <td>@grant.BudgetItems.Sum(b => b.ArccAmount).ToString("C")</td>
+                            <td>
+                                @(
+                                                        grant.BudgetItems.Sum(b =>
+                                                        b.ArccAmount +
+                                                        b.CollegeAmount +
+                                                        b.DepartmentAmount +
+                                                        b.OtherAmount
+                                                        ).ToString("C")
+                                                        )
+                            </td>
+                            <td>@(grant.Reviews.Any() ? grant.Reviews.Average(r => r.FinalPercentage).ToString("0.0") : "0.0")%</td>
+                            <td>@(grant.AllocatedAmount?.ToString("C") ?? "$0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <h5 class="text-success mb-3">Surviving Grants</h5>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Grant</th>
+                        <th>Principal Investigator</th>
+                        <th>ARCC Requested</th>
+                        <th>Total Project Cost</th>
+                        <th>Score</th>
+                        <th>Allocated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var grant in Model.SurvivingGrants)
+                    {
+                        <tr class="table-success">
+                            <td>@grant.Title</td>
+                            <td>@grant.ProjectDirector?.Email</td>
+                            <td>@grant.BudgetItems.Sum(b => b.ArccAmount).ToString("C")</td>
+                            <td>
+                                @(
+                                                        grant.BudgetItems.Sum(b =>
+                                                        b.ArccAmount +
+                                                        b.CollegeAmount +
+                                                        b.DepartmentAmount +
+                                                        b.OtherAmount
+                                                        ).ToString("C")
+                                                        )
+                            </td>
+                            <td>@(grant.Reviews.Any() ? grant.Reviews.Average(r => r.FinalPercentage).ToString("0.0") : "0.0")%</td>
+                            <td>@(grant.AllocatedAmount?.ToString("C") ?? "$0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card p-3 mb-4">
+
+            <h5 class="mb-3">Funding Rules</h5>
+
+            <p class="text-muted">
+                Add score ranges and the percentage of ARCC funding each range should receive.
+            </p>
+
+            <form method="post" asp-page-handler="ApplyFundingRules">
+
+                <input type="hidden" name="CutoffPercentage" value="@Model.CutoffPercentage" />
+                <input type="hidden" asp-for="AllocationRulesJson" id="AllocationRulesJson" />
+
+                <div id="rulesContainer"></div>
+
+                <button type="button"
+                        class="btn btn-outline-primary mb-3"
+                        onclick="addRule()">
+                    Add Rule
+                </button>
+
+                <button type="submit"
+                        class="btn btn-primary mb-3"
+                        onclick="saveRulesJson()">
+                    Apply Funding Rules
+                </button>
+
+            </form>
+
+        </div>
+
+        <form method="post"
+              asp-page-handler="FinalizeAllocation"
+              onsubmit="return confirmFinalAllocation();"
+              class="mb-4">
+
+            <input type="hidden" name="CutoffPercentage" value="@Model.CutoffPercentage" />
+            <input type="hidden" asp-for="AllocationRulesJson" id="FinalizeAllocationRulesJson" />
+
+            <button type="submit"
+                    class="btn btn-danger"
+                    onclick="copyRulesForFinalize()">
+                Final Allocation
+            </button>
+
+        </form>
+
+        <h5 class="text-danger mb-3">Rejected Grants</h5>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Grant</th>
+                        <th>Principal Investigator</th>
+                        <th>ARCC Requested</th>
+                        <th>Total Project Cost</th>
+                        <th>Score</th>
+                        <th>Allocated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var grant in Model.RejectedGrants)
+                    {
+                        <tr class="table-danger">
+                            <td>@grant.Title</td>
+                            <td>@grant.ProjectDirector?.Email</td>
+                            <td>@grant.BudgetItems.Sum(b => b.ArccAmount).ToString("C")</td>
+                            <td>
+                                @(
+                                                        grant.BudgetItems.Sum(b =>
+                                                        b.ArccAmount +
+                                                        b.CollegeAmount +
+                                                        b.DepartmentAmount +
+                                                        b.OtherAmount
+                                                        ).ToString("C")
+                                                        )
+                            </td>
+                            <td>@(grant.Reviews.Any() ? grant.Reviews.Average(r => r.FinalPercentage).ToString("0.0") : "0.0")%</td>
+                            <td>$0.00</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+</div>
+
+<div class="card shadow-sm p-4 mt-4">
+    <h4 class="section-title mb-3">
+        Accounting Export
+    </h4>
+
+    <p class="text-muted">
+        Download finalized allocation decisions as an Excel
+        spreadsheet for the accounting office.
+    </p>
+
+    <form method="post"
+          asp-page-handler="SendToAccounting"
+          onsubmit="return confirm(
+              'Download the finalized allocations for accounting?'
+          );">
+
+        <button type="submit"
+                class="btn btn-success">
+            Send to Accounting
+        </button>
+
+    </form>
+</div>
+
+<script>
+    let allocationRules = [];
+
+    function addRule(min = "", max = "", percent = "") {
+        allocationRules.push({
+            MinimumScore: min,
+            MaximumScore: max,
+            FundingPercent: percent
+        });
+
+        renderRules();
+    }
+
+    function removeRule(index) {
+        allocationRules.splice(index, 1);
+        renderRules();
+    }
+
+    function renderRules() {
+        const container = document.getElementById("rulesContainer");
+        container.innerHTML = "";
+
+        allocationRules.forEach((rule, index) => {
+            container.innerHTML += `
+                <div class="row align-items-end mb-2">
+                    <div class="col-md-3">
+                        <label class="form-label">Minimum Score</label>
+                        <input type="number" step="0.1" class="form-control"
+                               value="${rule.MinimumScore}"
+                               onchange="allocationRules[${index}].MinimumScore = parseFloat(this.value) || 0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Maximum Score</label>
+                        <input type="number" step="0.1" class="form-control"
+                               value="${rule.MaximumScore}"
+                               onchange="allocationRules[${index}].MaximumScore = parseFloat(this.value) || 0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Funding Percent</label>
+                        <input type="number" step="0.1" class="form-control"
+                               value="${rule.FundingPercent}"
+                               onchange="allocationRules[${index}].FundingPercent = parseFloat(this.value) || 0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-danger"
+                                onclick="removeRule(${index})">
+                            Delete
+                        </button>
+                    </div>
+                </div>`;
+        });
+
+        saveRulesJson();
+    }
+
+    function saveRulesJson() {
+        document.getElementById("AllocationRulesJson").value =
+            JSON.stringify(allocationRules);
+    }
+
+    addRule(90, 100.1, 100);
+    addRule(80, 90, 75);
+    addRule(70, 80, 50);
+
+        function copyRulesForFinalize() {
+        document.getElementById("FinalizeAllocationRulesJson").value =
+            JSON.stringify(allocationRules);
+    }
+
+    function confirmFinalAllocation() {
+        const firstConfirm = confirm(
+            "Are you sure you want to finalize allocations? This will permanently store funding decisions."
+        );
+
+        if (!firstConfirm) {
+            return false;
+        }
+
+        return confirm(
+            "Final confirmation: this action should only be done when allocations are ready to send to the budget office. Continue?"
+        );
+    }
+</script>

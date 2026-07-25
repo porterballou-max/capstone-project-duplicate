@@ -1,0 +1,93 @@
+﻿@model Capstoners2026.Web.Models.GrantsMissingReportsModel
+
+@if (Model.GrantsNextDay.Count > 0)
+{
+	<div class="alert border rounded p-3 alert-danger">
+		<h2>Immediate Action Required</h2>
+		<h4>You have grants which require reports.</h4>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width:40%">Title</th>
+					<th style="width:30%">Report Due Date (UTC)</th>
+					<th style="width:30%">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Grant grant in Model.GrantsNextDay)
+				{
+					<tr>
+						<td>@grant.Title</td>
+						<td>@grant.ReportingDueDate.ToString()</td>
+						<td>
+							<a class="btn btn-success" asp-page="#">Report</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+@if (Model.Grants7Days.Count > 0)
+{
+	<div class="alert border rounded p-3 alert-warning">
+		<h2>Action Required Within 7 Days</h2>
+		<h4>You have grants which require reports.</h4>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width:40%">Title</th>
+					<th style="width:30%">Report Due Date (UTC)</th>
+					<th style="width:30%">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Grant grant in Model.Grants7Days)
+				{
+					<tr>
+						<td>@grant.Title</td>
+						<td>@grant.ReportingDueDate.ToString()</td>
+						<td>
+							<a class="btn btn-success" asp-page="#">Report</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		
+	</div>
+}
+
+@if (Model.Grants30Days.Count > 0)
+{
+	<div class="alert border rounded p-3 alert-info">
+		<h2>Action Required Within 30 Days</h2>
+		<h4>You have grants which require reports.</h4>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width:40%">Title</th>
+					<th style="width:30%">Report Due Date (UTC)</th>
+					<th style="width:30%">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Grant grant in Model.Grants30Days)
+				{
+					<tr>
+						<td>@grant.Title</td>
+						<td>@grant.ReportingDueDate.ToString()</td>
+						<td>
+							<a class="btn btn-success" asp-page="#">Report</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
